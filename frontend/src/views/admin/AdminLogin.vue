@@ -23,7 +23,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { adminApi } from '../api/request'
+import { adminApi } from '../../api/request'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
