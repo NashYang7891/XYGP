@@ -1,19 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "frontend/dist" }
-    },
-    { "src": "api/announcements.js", "use": "@vercel/node" },
-    { "src": "api/auth/login.js", "use": "@vercel/node" },
-    { "src": "api/auth/register.js", "use": "@vercel/node" },
-    { "src": "api/auth/me.js", "use": "@vercel/node" },
-    { "src": "api/watchlist/[[...path]].js", "use": "@vercel/node" },
-    { "src": "api/admin/[[...path]].js", "use": "@vercel/node" },
-    { "src": "api/stocks/[[...path]].js", "use": "@vercel/node" }
-  ],
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": null,
   "rewrites": [
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ]
