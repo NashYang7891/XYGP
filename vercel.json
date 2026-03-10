@@ -6,7 +6,13 @@
       "use": "@vercel/static-build",
       "config": { "distDir": "frontend/dist" }
     },
-    { "src": "api/**/*.js", "use": "@vercel/node" }
+    { "src": "api/announcements.js", "use": "@vercel/node" },
+    { "src": "api/auth/login.js", "use": "@vercel/node" },
+    { "src": "api/auth/register.js", "use": "@vercel/node" },
+    { "src": "api/auth/me.js", "use": "@vercel/node" },
+    { "src": "api/watchlist/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/admin/[[...path]].js", "use": "@vercel/node" },
+    { "src": "api/stocks/[[...path]].js", "use": "@vercel/node" }
   ],
   "rewrites": [
     { "source": "/((?!api).*)", "destination": "/index.html" }
