@@ -11,12 +11,18 @@ const JP_STOCKS = [
 ]
 const PERIOD_MAP = { '5d': [8, 5], '1mo': [8, 22], '3mo': [8, 66], '6mo': [8, 132], '1y': [8, 252] }
 
+function getPathParts(req) {
+  const path = (req.url || '').split('?')[0]
+  const match = path.match(/\/api\/stocks(?:\/(.*))?$/)
+  const rest = (match && match[1]) ? match[1].split('/').filter(Boolean) : []
+  return rest
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
   res.setHeader('Access-Control-Allow-Origin', '*')
 
-  const seg = (req.query?.path || [])
-  const parts = Array.isArray(seg) ? seg : [seg]
+  const parts = getPathParts(req)
   const p0 = parts[0]
   const p1 = parts[1]
 

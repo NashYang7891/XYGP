@@ -17,12 +17,18 @@ async function getAdminAuth(req, res) {
   return payload
 }
 
+function getPathParts(req) {
+  const path = (req.url || '').split('?')[0]
+  const match = path.match(/\/api\/admin(?:\/(.*))?$/)
+  const rest = (match && match[1]) ? match[1].split('/').filter(Boolean) : []
+  return rest
+}
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
   res.setHeader('Access-Control-Allow-Origin', '*')
 
-  const seg = (req.query?.path || [])
-  const parts = Array.isArray(seg) ? seg : [seg]
+  const parts = getPathParts(req)
   const p0 = parts[0]
   const p1 = parts[1]
 

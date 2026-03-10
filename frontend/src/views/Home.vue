@@ -113,13 +113,19 @@ async function loadWatchlist() {
 
 onMounted(async () => {
   try {
-    const [sRes, aRes] = await Promise.all([getPopularStocks(), getAnnouncements()])
-    stocks.value = sRes.data || []
-    announcements.value = aRes.data || []
-    await loadWatchlist()
+    const [sRes, aRes] = await Promise.all([
+      getPopularStocks().catch(e => { console.error('popular', e); return { data: [] } }),
+      getAnnouncements().catch(e => { console.error('announcements', e); return { data: [] } }),
+    ])
+    stocks.value = sRes?.data || []
+    announcements.value = aRes?.data || []
   } catch (e) {
-    ElMessage.error('加载失败')
+    console.error('load', e)
+    ElMessage.error(e?.msg || '加载失败')
   }
+  try {
+    await loadWatchlist()
+  } catch {}
 })
 </script>
 
