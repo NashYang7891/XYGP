@@ -55,6 +55,12 @@ async function loadKline() {
     klineData.value = res.data || []
   } catch (e) {
     klineData.value = []
+    const msg = e?.msg || e?.message || '行情加载失败'
+    if (msg.includes('ITICK') || msg.includes('未配置')) {
+      ElMessage.warning('行情服务未配置，请在 Vercel 环境变量中设置 ITICK_TOKEN')
+    } else {
+      ElMessage.warning(msg)
+    }
   }
 }
 
