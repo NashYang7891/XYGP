@@ -3,6 +3,8 @@
   "outputDirectory": "frontend/dist",
   "framework": null,
   "rewrites": [
+    { "source": "/api/stocks/popular", "destination": "/api/stocks/list?type=popular" },
+    { "source": "/api/stocks/search", "destination": "/api/stocks/list" },
     { "source": "/((?!api).*)", "destination": "/index.html" }
   ]
 }
