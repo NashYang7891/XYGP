@@ -47,7 +47,7 @@ async function submit() {
     ElMessage.success('登录成功')
     router.push('/')
   } catch (e) {
-    ElMessage.error(e.message || '登录失败')
+    ElMessage.error(e?.msg || e?.message || '登录失败')
   } finally {
     loading.value = false
   }

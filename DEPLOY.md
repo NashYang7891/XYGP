@@ -76,6 +76,7 @@ DATABASE_URL="你的Neon连接串" node scripts/init-db.js
 
 ## 四、常见问题
 
-1. **K 线不显示**：检查 `ITICK_TOKEN` 是否配置正确
-2. **登录失败**：确认已运行 `init-db.js` 创建管理员和测试用户
-3. **数据库连接失败**：检查 `DATABASE_URL` 格式和 Neon 项目是否已启动
+1. **登录接口 404**：在 Vercel 项目 **Settings → General → Root Directory** 必须为 **空** 或 **`.`**（项目根目录）。若设为 `frontend`，则 `api/` 不会被部署，导致 `/api/auth/login` 等接口 404。
+2. **K 线不显示**：检查 `ITICK_TOKEN` 是否配置正确
+3. **登录失败（非 404）**：确认已运行 `init-db.js` 创建管理员和测试用户
+4. **数据库连接失败**：检查 `DATABASE_URL` 格式和 Neon 项目是否已启动
