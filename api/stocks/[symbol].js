@@ -1,5 +1,5 @@
-import { sql } from '../lib/db.js'
-import { verifyToken } from '../lib/auth.js'
+import { sql } from '../../lib/db.js'
+import { verifyToken } from '../../lib/auth.js'
 
 export const config = { runtime: 'nodejs' }
 

@@ -2,7 +2,7 @@
  * 合并 search + popular：/api/stocks/list?type=popular 或 ?q=xxx
  * 通过 vercel.json rewrites 映射 /api/stocks/search 和 /api/stocks/popular
  */
-import { sql } from '../lib/db.js'
+import { sql } from '../../lib/db.js'
 
 export const config = { runtime: 'nodejs' }
 

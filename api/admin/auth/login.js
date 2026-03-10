@@ -1,5 +1,5 @@
-import { sql } from '../../lib/db.js'
-import { signToken } from '../../lib/auth.js'
+import { sql } from '../../../lib/db.js'
+import { signToken } from '../../../lib/auth.js'
 import bcrypt from 'bcryptjs'
 
 export const config = { runtime: 'nodejs' }
