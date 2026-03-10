@@ -3,13 +3,11 @@ import { verifyToken } from '../lib/auth.js'
 
 export const config = { runtime: 'nodejs' }
 
-const ITICK_TOKEN = process.env.ITICK_TOKEN || ''
 const JP_STOCKS = [
   ['7203', 'トヨタ自動車'], ['9984', 'ソフトバンクG'], ['6758', 'ソニーG'],
   ['7974', '任天堂'], ['9983', 'ファーストリテイリング'], ['6861', 'キーエンス'],
   ['8306', '三菱UFJ'], ['9432', '日本電信電話'], ['9433', 'KDDI'], ['7267', '本田技研工業'],
 ]
-const PERIOD_MAP = { '5d': [8, 5], '1mo': [8, 22], '3mo': [8, 66], '6mo': [8, 132], '1y': [8, 252] }
 
 function getPathParts(req) {
   const path = (req.url || '').split('?')[0]
@@ -45,40 +43,6 @@ export default async function handler(req, res) {
       rows = await sql`SELECT * FROM stocks ORDER BY id LIMIT 20`
     }
     return res.status(200).json({ code: 0, data: rows })
-  }
-
-  if (p0 && p1 === 'kline') {
-    if (req.method !== 'GET') return res.status(405).json({ code: 405, msg: 'Method not allowed' })
-    const symbol = p0
-    if (!symbol) return res.status(400).json({ code: 400, msg: '缺少股票代码' })
-    if (!ITICK_TOKEN) return res.status(500).json({ code: 500, msg: '未配置 ITICK_TOKEN' })
-    const urlObj = req.url?.startsWith('http') ? new URL(req.url) : new URL('http://x' + (req.url || ''))
-    const period = urlObj.searchParams.get('period') || '1mo'
-    const [kType, limit] = PERIOD_MAP[period] || [8, 22]
-    const code = symbol.replace(/\.T$/, '').replace(/\./g, '')
-    const url = `https://api.itick.org/stock/kline?region=JP&code=${encodeURIComponent(code)}&kType=${kType}&limit=${limit}`
-    try {
-      const r = await fetch(url, { headers: { accept: 'application/json', token: ITICK_TOKEN } })
-      const data = await r.json()
-      if (data.code !== 0) throw new Error(data.msg || 'iTick API 错误')
-      const raw = data.data || []
-      const result = raw.map((item) => {
-        const t = item.t
-        const date = t ? new Date(t).toISOString().slice(0, 10) : ''
-        return {
-          date,
-          open: item.o != null ? Math.round(item.o * 100) / 100 : null,
-          high: item.h != null ? Math.round(item.h * 100) / 100 : null,
-          low: item.l != null ? Math.round(item.l * 100) / 100 : null,
-          close: item.c != null ? Math.round(item.c * 100) / 100 : null,
-          volume: item.v != null ? Math.floor(item.v) : null,
-        }
-      })
-      return res.status(200).json({ code: 0, data: result })
-    } catch (e) {
-      console.error(e)
-      return res.status(500).json({ code: 500, msg: e.message })
-    }
   }
 
   if (p0 && !p1) {
