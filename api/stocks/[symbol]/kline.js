@@ -5,7 +5,17 @@
 export const config = { runtime: 'nodejs' }
 
 const ITICK_TOKEN = process.env.ITICK_TOKEN || ''
-const PERIOD_MAP = { '5d': [8, 5], '1mo': [8, 22], '3mo': [8, 66], '6mo': [8, 132], '1y': [8, 252] }
+// kType: iTick 文档 1=1分 2=5分 3=15分 4=30分 5=60分 8=日K …
+const PERIOD_MAP = {
+  '5m': [2, 48],
+  '15m': [3, 48],
+  '60m': [5, 48],
+  '5d': [8, 5],
+  '1mo': [8, 22],
+  '3mo': [8, 66],
+  '6mo': [8, 132],
+  '1y': [8, 252],
+}
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end()
@@ -24,6 +34,7 @@ export default async function handler(req, res) {
   const period = (req.query?.period || '1mo').toLowerCase()
   const [kType, limit] = PERIOD_MAP[period] || [8, 22]
   const code = String(symbol).replace(/\.T$/i, '').replace(/\./g, '')
+  const isMinute = kType < 8
 
   const url = `https://api.itick.org/stock/kline?region=JP&code=${encodeURIComponent(code)}&kType=${kType}&limit=${limit}`
 
@@ -38,7 +49,13 @@ export default async function handler(req, res) {
     const raw = data.data || []
     const result = raw.map((item) => {
       const t = item.t
-      const date = t ? new Date(t).toISOString().slice(0, 10) : ''
+      let date = ''
+      if (t) {
+        const d = new Date(t)
+        date = isMinute
+          ? `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')} ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`
+          : d.toISOString().slice(0, 10)
+      }
       return {
         date,
         open: item.o != null ? Math.round(item.o * 100) / 100 : null,

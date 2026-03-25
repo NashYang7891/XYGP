@@ -11,6 +11,9 @@
       </template>
       <div class="period-tabs">
         <el-radio-group v-model="period" size="small" @change="loadKline">
+          <el-radio-button label="5m">5分</el-radio-button>
+          <el-radio-button label="15m">15分</el-radio-button>
+          <el-radio-button label="60m">60分</el-radio-button>
           <el-radio-button label="5d">5日</el-radio-button>
           <el-radio-button label="1mo">1月</el-radio-button>
           <el-radio-button label="3mo">3月</el-radio-button>
@@ -18,13 +21,13 @@
           <el-radio-button label="1y">1年</el-radio-button>
         </el-radio-group>
       </div>
-      <KLineChart :data="klineData" :symbol="stock.symbol" />
+      <KLineChart :data="klineData" :symbol="stock.symbol" :minute="isMinutePeriod" />
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '../store/user'
 import { getStockDetail, getStockKline } from '../api/stock'
@@ -39,6 +42,7 @@ const stock = ref(null)
 const klineData = ref([])
 const period = ref('1mo')
 const loading = ref(true)
+const isMinutePeriod = computed(() => ['5m', '15m', '60m'].includes(period.value))
 
 async function loadDetail() {
   try {
@@ -81,11 +85,20 @@ async function toggleWatch() {
   }
 }
 
-onMounted(async () => {
+async function reloadAll() {
   loading.value = true
-  await loadDetail()
-  await loadKline()
-  loading.value = false
+  try {
+    await loadDetail()
+    await loadKline()
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => reloadAll())
+
+watch(symbol, (v) => {
+  if (v) reloadAll()
 })
 </script>
 
@@ -94,4 +107,5 @@ onMounted(async () => {
 .header-row { display: flex; justify-content: space-between; align-items: center; }
 .title { font-size: 18px; font-weight: bold; }
 .period-tabs { margin-bottom: 16px; }
+.period-tabs :deep(.el-radio-group) { display: flex; flex-wrap: wrap; gap: 4px; }
 </style>

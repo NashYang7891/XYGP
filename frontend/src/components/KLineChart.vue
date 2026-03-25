@@ -9,6 +9,8 @@ import * as echarts from 'echarts'
 const props = defineProps({
   data: { type: Array, default: () => [] },
   symbol: { type: String, default: '' },
+  /** 分钟 K：横轴更密，默认展示全部区间 */
+  minute: { type: Boolean, default: false },
 })
 
 const chartRef = ref()
@@ -39,7 +41,12 @@ function render() {
       { left: '10%', right: '8%', top: '75%', height: '15%' },
     ],
     xAxis: [
-      { type: 'category', data: dates, gridIndex: 0, axisLabel: { rotate: 45 } },
+      {
+        type: 'category',
+        data: dates,
+        gridIndex: 0,
+        axisLabel: props.minute ? { rotate: 55, fontSize: 10 } : { rotate: 45 },
+      },
       { type: 'category', data: dates, gridIndex: 1, axisLabel: { show: false } },
     ],
     yAxis: [
@@ -47,8 +54,8 @@ function render() {
       { type: 'value', gridIndex: 1, splitLine: { show: false } },
     ],
     dataZoom: [
-      { type: 'inside', xAxisIndex: [0, 1], start: 70, end: 100 },
-      { type: 'slider', xAxisIndex: [0, 1], start: 70, end: 100 },
+      { type: 'inside', xAxisIndex: [0, 1], start: props.minute ? 0 : 70, end: 100 },
+      { type: 'slider', xAxisIndex: [0, 1], start: props.minute ? 0 : 70, end: 100 },
     ],
     series: [
       {
@@ -88,7 +95,7 @@ onMounted(() => {
   render()
 })
 
-watch(() => [props.data, props.symbol], () => render(), { deep: true })
+watch(() => [props.data, props.symbol, props.minute], () => render(), { deep: true })
 </script>
 
 <style scoped>

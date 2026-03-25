@@ -19,6 +19,10 @@ const routes = [
     meta: { auth: true },
     children: [
       { path: '', name: 'Home', component: () => import('../views/Home.vue') },
+      { path: 'intraday', name: 'Intraday', component: () => import('../views/Intraday.vue') },
+      { path: 'etf', name: 'Etf', component: () => import('../views/Etf.vue') },
+      { path: 'topic/:slug', name: 'Topic', component: () => import('../views/TopicPage.vue') },
+      { path: 'index/:code', name: 'IndexDetail', component: () => import('../views/IndexPage.vue') },
       { path: 'stock/:symbol', name: 'StockDetail', component: () => import('../views/StockDetail.vue') },
       { path: 'watchlist', name: 'Watchlist', component: () => import('../views/Watchlist.vue') },
     ],

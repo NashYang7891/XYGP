@@ -65,22 +65,23 @@ import { getAnnouncements } from '../api/announcement'
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from '../api/watchlist'
 import { ElMessage } from 'element-plus'
 import {
-  DataLine, Clock, User, Wallet, ScaleToOriginal, Money, Plus, TrendCharts,
+  DataLine, Clock, User, Wallet, ScaleToOriginal, Money, Plus, TrendCharts, Grid,
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()
 
-// 8 个功能模块
+// 功能入口：专题页 / 独立页
 const featureModules = [
-  { key: 'block', label: '大宗交易', icon: DataLine },
-  { key: 'intraday', label: '日内交易', icon: Clock },
-  { key: 'internal', label: '内部交易', icon: User },
-  { key: 'lending', label: '借贷服务', icon: Wallet },
-  { key: 'stock-lend', label: '股票出借', icon: ScaleToOriginal },
-  { key: 'leverage', label: '杠杆交易', icon: Money },
-  { key: 'ipo', label: '新股交易', icon: Plus },
-  { key: 'limit', label: '每日涨停', icon: TrendCharts },
+  { key: 'block', label: '大宗交易', icon: DataLine, topic: 'block' },
+  { key: 'intraday', label: '日内交易', icon: Clock, route: '/intraday' },
+  { key: 'etf', label: 'ETF', icon: Grid, route: '/etf' },
+  { key: 'internal', label: '内部交易', icon: User, topic: 'internal' },
+  { key: 'lending', label: '借贷服务', icon: Wallet, topic: 'lending' },
+  { key: 'stock-lend', label: '股票出借', icon: ScaleToOriginal, topic: 'stock-lend' },
+  { key: 'leverage', label: '杠杆交易', icon: Money, topic: 'leverage' },
+  { key: 'ipo', label: '新股交易', icon: Plus, topic: 'ipo' },
+  { key: 'limit', label: '每日涨停', icon: TrendCharts, topic: 'limit-up' },
 ]
 
 // 指数列表
@@ -92,11 +93,19 @@ const indexList = [
 ]
 
 function onModuleClick(m) {
+  if (m.route) {
+    router.push(m.route)
+    return
+  }
+  if (m.topic) {
+    router.push(`/topic/${m.topic}`)
+    return
+  }
   ElMessage.info(`${m.label} 功能开发中`)
 }
 
 function onIndexClick(idx) {
-  ElMessage.info(`${idx.name} 指数详情开发中`)
+  router.push(`/index/${idx.code}`)
 }
 const stocks = ref([])
 const searchResult = ref([])
@@ -183,30 +192,35 @@ onMounted(async () => {
 <style scoped>
 .home { max-width: 1200px; margin: 0 auto; }
 
-/* 功能模块网格 */
+/* 功能模块网格（琥珀 + 深蓝系，区别于原站） */
 .module-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
   margin-bottom: 24px;
+}
+@media (min-width: 900px) {
+  .module-grid { grid-template-columns: repeat(3, 1fr); }
 }
 .module-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 16px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border-radius: 12px;
+  padding: 18px 12px;
+  background: linear-gradient(145deg, #fff 0%, #f8fafc 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 14px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 .module-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  border-color: rgba(245, 158, 11, 0.65);
 }
-.module-icon { color: #2e7d32; margin-bottom: 8px; }
-.module-label { font-size: 14px; font-weight: 500; color: #1b5e20; }
+.module-icon { color: #d97706; margin-bottom: 8px; }
+.module-label { font-size: 13px; font-weight: 600; color: #0f172a; text-align: center; }
 
 /* 指数列表 */
 .index-section { margin-bottom: 24px; }
@@ -224,8 +238,9 @@ onMounted(async () => {
   flex-shrink: 0;
   width: 140px;
   padding: 16px;
-  background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
-  border-radius: 10px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0c4a6e 100%);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 12px;
   color: #fff;
   cursor: pointer;
   transition: transform 0.2s;
